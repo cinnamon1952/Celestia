@@ -1,36 +1,85 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Celestia - Interactive Star Chart
+
+A beautiful, accurate, real-time interactive star map built with Next.js, Three.js, and astronomy-engine.
+
+## Features
+
+- **5,000+ Stars** - Fetched from HYG database (Hipparcos, Yale, Gliese)
+- **All Planets** - Including Pluto and 25+ major moons
+- **88 Constellations** - IAU constellations with lines and labels
+- **Deep Sky Objects** - Messier catalog + extended galaxies, nebulae, and clusters from SIMBAD
+- **Meteor Showers** - 11 major annual meteor showers with active status
+- **Asteroids** - Near-Earth asteroids from NASA API
+- **Real-time Calculations** - Accurate Alt/Az positions based on your location and time
+- **Search** - Find any star, planet, moon, constellation, or deep sky object
+- **Time Controls** - Speed up time, reset to now
+- **Location** - Auto-detect or manual entry
+
+## Tech Stack
+
+- **Next.js 16** (App Router)
+- **TypeScript**
+- **Three.js** + **@react-three/fiber** + **@react-three/drei**
+- **astronomy-engine** - Accurate astronomical calculations
+- **Tailwind CSS** - Styling
+- **shadcn/ui** - UI components
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
+# Install dependencies
+npm install
+
+# Run development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+
+# Build for production
+npm run build
+
+# Start production server
+npm start
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) to view the app.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Deployment
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Deploy to Vercel (Recommended)
 
-## Learn More
+The easiest way to deploy is using [Vercel](https://vercel.com):
 
-To learn more about Next.js, take a look at the following resources:
+1. Push your code to GitHub
+2. Go to [vercel.com](https://vercel.com) and sign in
+3. Click "New Project"
+4. Import your GitHub repository
+5. Vercel will auto-detect Next.js and deploy
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+**That's it!** Vercel handles everything automatically.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Deploy to Other Platforms
 
-## Deploy on Vercel
+#### Netlify
+1. Connect your GitHub repo to Netlify
+2. Build command: `npm run build`
+3. Publish directory: `.next`
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+#### Self-hosted
+```bash
+npm run build
+npm start
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Environment Variables
+
+No environment variables required! All APIs used are public and don't require keys.
+
+## Data Sources
+
+- **Stars**: HYG Database via jsDelivr CDN
+- **Asteroids**: NASA NEO API (uses DEMO_KEY)
+- **Deep Sky Objects**: SIMBAD astronomical database
+- **Planets/Moons**: astronomy-engine library (VSOP87/ELP theories)
+
+## License
+
+MIT

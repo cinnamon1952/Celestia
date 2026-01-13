@@ -1,0 +1,180 @@
+{
+  "metadata": {
+    "description": "Constellation line data for major constellations",
+    "format": "Each constellation has lines connecting star names"
+  },
+  "constellations": [
+    {
+      "name": "Orion",
+      "lines": [
+        ["Betelgeuse", "Bellatrix"],
+        ["Betelgeuse", "Alnilam"],
+        ["Bellatrix", "Mintaka"],
+        ["Mintaka", "Alnilam"],
+        ["Alnilam", "Alnitak"],
+        ["Alnitak", "Saiph"],
+        ["Alnilam", "Rigel"],
+        ["Rigel", "Saiph"]
+      ]
+    },
+    {
+      "name": "Ursa Major",
+      "lines": [
+        ["Dubhe", "Merak"],
+        ["Merak", "Phecda"],
+        ["Phecda", "Megrez"],
+        ["Megrez", "Alioth"],
+        ["Alioth", "Mizar"],
+        ["Mizar", "Alkaid"],
+        ["Megrez", "Dubhe"]
+      ]
+    },
+    {
+      "name": "Cassiopeia",
+      "lines": [
+        ["Schedar", "Caph"],
+        ["Schedar", "Navi"],
+        ["Navi", "Ruchbah"],
+        ["Ruchbah", "Segin"]
+      ]
+    },
+    {
+      "name": "Leo",
+      "lines": [
+        ["Regulus", "Algieba"],
+        ["Algieba", "Zosma"],
+        ["Zosma", "Denebola"],
+        ["Regulus", "Chertan"],
+        ["Chertan", "Zosma"],
+        ["Algieba", "Adhafera"],
+        ["Adhafera", "Rasalas"]
+      ]
+    },
+    {
+      "name": "Cygnus",
+      "lines": [
+        ["Deneb", "Sadr"],
+        ["Sadr", "Albireo"],
+        ["Sadr", "Aljanah"],
+        ["Aljanah", "Fawaris"]
+      ]
+    },
+    {
+      "name": "Scorpius",
+      "lines": [
+        ["Antares", "Dschubba"],
+        ["Dschubba", "Acrab"],
+        ["Antares", "Larawag"],
+        ["Larawag", "Sargas"],
+        ["Sargas", "Shaula"],
+        ["Shaula", "Lesath"]
+      ]
+    },
+    {
+      "name": "Lyra",
+      "lines": [
+        ["Vega", "Sheliak"],
+        ["Sheliak", "Sulafat"],
+        ["Sulafat", "Vega"]
+      ]
+    },
+    {
+      "name": "Gemini",
+      "lines": [
+        ["Castor", "Pollux"],
+        ["Castor", "Mebsuta"],
+        ["Pollux", "Kappa Gem"],
+        ["Castor", "Alhena"]
+      ]
+    },
+    {
+      "name": "Sagittarius",
+      "lines": [
+        ["Kaus Australis", "Ascella"],
+        ["Ascella", "Nunki"],
+        ["Nunki", "Kaus Australis"],
+        ["Kaus Australis", "Rukbat"]
+      ]
+    },
+    {
+      "name": "Aquila",
+      "lines": [
+        ["Altair", "Tarazed"],
+        ["Altair", "Alshain"]
+      ]
+    },
+    {
+      "name": "Ursa Minor",
+      "lines": [
+        ["Polaris", "Kochab"],
+        ["Kochab", "Pherkad"]
+      ]
+    },
+    {
+      "name": "Canis Major",
+      "lines": [
+        ["Sirius", "Mirzam"],
+        ["Sirius", "Adhara"],
+        ["Adhara", "Wezen"],
+        ["Wezen", "Aludra"]
+      ]
+    },
+    {
+      "name": "Taurus",
+      "lines": [
+        ["Aldebaran", "Elnath"],
+        ["Aldebaran", "Alcyone"]
+      ]
+    },
+    {
+      "name": "Virgo",
+      "lines": [
+        ["Spica", "Vindemiatrix"]
+      ]
+    },
+    {
+      "name": "Bootes",
+      "lines": [
+        ["Arcturus", "Izar"],
+        ["Izar", "Alkalurops"]
+      ]
+    },
+    {
+      "name": "Pegasus",
+      "lines": [
+        ["Markab", "Scheat"],
+        ["Scheat", "Alpheratz"],
+        ["Alpheratz", "Algenib"],
+        ["Algenib", "Markab"],
+        ["Scheat", "Enif"]
+      ]
+    },
+    {
+      "name": "Corona Borealis",
+      "lines": [
+        ["Alphecca", "Nusakan"]
+      ]
+    },
+    {
+      "name": "Andromeda",
+      "lines": [
+        ["Alpheratz", "Mirach"],
+        ["Mirach", "Almach"]
+      ]
+    },
+    {
+      "name": "Perseus",
+      "lines": [
+        ["Mirfak", "Algol"]
+      ]
+    },
+    {
+      "name": "Auriga",
+      "lines": [
+        ["Capella", "Menkalinan"],
+        ["Menkalinan", "Elnath"],
+        ["Capella", "Almaaz"]
+      ]
+    }
+  ]
+}
