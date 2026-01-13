@@ -42,33 +42,6 @@ npm start
 
 Open [http://localhost:3000](http://localhost:3000) to view the app.
 
-## Deployment
-
-### Deploy to Vercel (Recommended)
-
-The easiest way to deploy is using [Vercel](https://vercel.com):
-
-1. Push your code to GitHub
-2. Go to [vercel.com](https://vercel.com) and sign in
-3. Click "New Project"
-4. Import your GitHub repository
-5. Vercel will auto-detect Next.js and deploy
-
-**That's it!** Vercel handles everything automatically.
-
-### Deploy to Other Platforms
-
-#### Netlify
-1. Connect your GitHub repo to Netlify
-2. Build command: `npm run build`
-3. Publish directory: `.next`
-
-#### Self-hosted
-```bash
-npm run build
-npm start
-```
-
 ## Environment Variables
 
 No environment variables required! All APIs used are public and don't require keys.
