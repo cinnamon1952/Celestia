@@ -102,6 +102,7 @@ function HomeContent() {
   const [showHorizon, setShowHorizon] = useState(true);
   const [showDeepSky, setShowDeepSky] = useState(true);
   const [showLabels, setShowLabels] = useState(true);
+  const [showGrid, setShowGrid] = useState(false);
   const [showConstellationArt, setShowConstellationArt] = useState(true);
   const [lightPollution, setLightPollution] = useState(0.2); // 0.0 to 1.0 (Dark Sky to City)
   const [horizon, setHorizon] = useState("ocean");
@@ -414,7 +415,7 @@ function HomeContent() {
           longitude={location.longitude}
           time={dateTime}
           horizon={horizon}
-          showGrid={false} // Todo: Add state
+          showGrid={showGrid}
         />
       </div>
       {/* UI Controls */}
@@ -451,6 +452,8 @@ function HomeContent() {
         onLightPollutionChange={setLightPollution}
         horizon={horizon}
         onHorizonChange={setHorizon}
+        showGrid={showGrid}
+        onShowGridChange={setShowGrid}
       />
       {/* Search */}
       <SearchBar
@@ -476,7 +479,11 @@ function HomeContent() {
       {/* Compass */}
       <CompassRoseUI rotation={cameraRotation} />
       {/* Event Calendar */}
-      <EventCalendar currentDate={dateTime} onTimeTravel={setDateTime} />
+      <EventCalendar
+        currentDate={dateTime}
+        location={location}
+        onTimeTravel={handleDateTimeChange}
+      />
       {/* Share Button */}
       <ShareButton onShare={shareView} /> {/* Star Info Card */}
       {selectedStar && (

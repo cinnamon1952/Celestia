@@ -51,6 +51,8 @@ interface ControlsProps {
   onShowAsteroidsChange: (show: boolean) => void;
   showSatellites: boolean;
   onShowSatellitesChange: (show: boolean) => void;
+  showGrid: boolean;
+  onShowGridChange: (show: boolean) => void;
 }
 
 // Section component
@@ -147,6 +149,8 @@ export function Controls({
   onShowAsteroidsChange,
   showSatellites,
   onShowSatellitesChange,
+  showGrid,
+  onShowGridChange,
 }: ControlsProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [latInput, setLatInput] = useState(location.latitude.toFixed(2));
@@ -412,6 +416,11 @@ export function Controls({
                   label="Horizon Plane"
                   checked={showHorizon}
                   onChange={onShowHorizonChange}
+                />
+                <Toggle
+                  label="Grid Lines"
+                  checked={showGrid}
+                  onChange={onShowGridChange}
                 />
 
                 {/* Light Pollution Slider */}

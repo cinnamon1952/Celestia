@@ -1040,3 +1040,144 @@ export function processMeteorShower(
     parentBody: shower.parentBody,
   };
 }
+// ... (existing exports)
+
+export interface AstronomicalEvent {
+  id: string;
+  name: string;
+  date: Date;
+  type: "moon" | "meteor" | "conjunction" | "eclipse" | "planet";
+  description: string;
+}
+
+/**
+ * Calculate upcoming astronomical events
+ * - Moon Phases
+ * - Planetary Oppositions (simplified)
+ * - Meteor Showers (from static data but dynamically checked)
+ */
+export function getUpcomingAstronomyEvents(
+  location: GeoLocation,
+  baseDate: Date,
+  daysAhead: number = 30
+): AstronomicalEvent[] {
+  const events: AstronomicalEvent[] = [];
+  const time = Astronomy.MakeTime(baseDate);
+  // const observer = createObserver(location); // Unused for phase search
+
+  // 1. Moon Phases
+  // Astronomy.SearchMoonPhase(0, time, daysAhead); // Removed unused call
+
+  const phases = [
+    { angle: 0, name: "New Moon", desc: "Moon is between Earth and Sun" },
+    { angle: 90, name: "First Quarter", desc: "Moon is half illuminated" },
+    {
+      angle: 180,
+      name: "Full Moon",
+      desc: "Entire face of Moon is illuminated",
+    },
+    {
+      angle: 270,
+      name: "Last Quarter",
+      desc: "Moon is half illuminated (waning)",
+    },
+  ];
+
+  phases.forEach((phase) => {
+    const searchTime = time;
+    // Search for next occurrence within window
+    // Logic: Iterate days and check phase? Or use SearchMoonPhase iteratively.
+    // Astronomy.SearchMoonPhase finds the *next* occurrence.
+    const nextPhase = Astronomy.SearchMoonPhase(
+      phase.angle,
+      searchTime,
+      daysAhead
+    );
+    if (nextPhase) {
+      events.push({
+        id: `moon-${phase.name}-${nextPhase.date.getTime()}`,
+        name: phase.name,
+        date: nextPhase.date,
+        type: "moon",
+        description: phase.desc,
+      });
+    }
+  });
+
+  // 2. Meteor Showers (Static for now, but filtered by date)
+  const meteorShowers = [
+    { name: "Quadrantids", month: 0, day: 3 },
+    { name: "Lyrids", month: 3, day: 22 },
+    { name: "Perseids", month: 7, day: 12 },
+    { name: "Orionids", month: 9, day: 21 },
+    { name: "Leonids", month: 10, day: 17 },
+    { name: "Geminids", month: 11, day: 14 },
+  ];
+
+  meteorShowers.forEach((shower) => {
+    const year = baseDate.getFullYear();
+    // Check this year and next year
+    [year, year + 1].forEach((y) => {
+      const showerDate = new Date(y, shower.month, shower.day);
+      if (
+        showerDate >= baseDate &&
+        showerDate.getTime() <= baseDate.getTime() + daysAhead * 86400000
+      ) {
+        events.push({
+          id: `meteor-${shower.name}-${y}`,
+          name: `${shower.name} Peak`,
+          date: showerDate,
+          type: "meteor",
+          description: `Peak activity for ${shower.name} meteor shower`,
+        });
+      }
+    });
+  });
+
+  // 3. Planetary positions (Simplified "Conjunctions" or just visible planets)
+  // For a real chart, we'd check separation. For now, let's list when planets are high in the sky at midnight (Opposition-ish)
+  // Better: Just check if a planet is visible tonight? No, that's "Tonight's Sky".
+  // Let's stick to Moon and Meteors for the "Events" tab as they are time-critical.
+  // Maybe add Equinoxes/Solstices if supported. Astronomy Engine supports Seasons.
+
+  const season = Astronomy.Seasons(baseDate.getFullYear());
+  const seasonEvents = [
+    {
+      name: "March Equinox",
+      date: season.mar_equinox.date,
+      desc: "Start of Spring (NH) / Autumn (SH)",
+    },
+    {
+      name: "June Solstice",
+      date: season.jun_solstice.date,
+      desc: "Longest day (NH) / Shortest day (SH)",
+    },
+    {
+      name: "Sept Equinox",
+      date: season.sep_equinox.date,
+      desc: "Start of Autumn (NH) / Spring (SH)",
+    },
+    {
+      name: "Dec Solstice",
+      date: season.dec_solstice.date,
+      desc: "Shortest day (NH) / Longest day (SH)",
+    },
+  ];
+
+  seasonEvents.forEach((se) => {
+    if (
+      se.date >= baseDate &&
+      se.date.getTime() <= baseDate.getTime() + daysAhead * 86400000
+    ) {
+      events.push({
+        id: `season-${se.name}-${se.date.getTime()}`,
+        name: se.name,
+        date: se.date,
+        type: "conjunction", // using generic icon
+        description: se.desc,
+      });
+    }
+  });
+
+  return events.sort((a, b) => a.date.getTime() - b.date.getTime());
+}

@@ -1,6 +1,5 @@
 "use client";
 
-import { useTexture } from "@react-three/drei";
 import * as THREE from "three";
 import { useMemo } from "react";
 
@@ -63,8 +62,8 @@ function createMountainTexture() {
 function OceanHorizon({ lightPollution }: { lightPollution: number }) {
   // Dark blue water, reflective
   return (
-    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -2, 0]}>
-      <circleGeometry args={[200, 64]} />
+    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -5, 0]}>
+      <circleGeometry args={[150, 64]} />
       <meshStandardMaterial
         color="#001133"
         roughness={0.1}
@@ -78,27 +77,23 @@ function OceanHorizon({ lightPollution }: { lightPollution: number }) {
 
 function TexturedHorizon({
   type,
-  lightPollution,
 }: {
   type: "city" | "desert";
   lightPollution: number;
 }) {
-  const texture = useMemo(() => {
-    if (type === "city") return createCityTexture();
-    return createMountainTexture();
-  }, [type]);
+  // Use dirt/sand texture for desert, concrete/dark for city
+  // For now using colors as detailed textures need assets
 
   // Cylinder surrounding the viewer
   return (
-    <mesh position={[0, -5, 0]}>
-      <cylinderGeometry args={[50, 50, 20, 64, 1, true]} />
+    <mesh position={[0, -20, 0]}>
+      <cylinderGeometry args={[120, 120, 60, 64, 1, true]} />
       <meshBasicMaterial
-        map={texture}
-        transparent
+        // Use solid colors for now to ensure visibility
+        color={type === "desert" ? "#c2b280" : "#2a2a2a"} // Sand color vs Dark Grey
+        transparent={false} // Make opaque to guarantee visibility
         side={THREE.BackSide}
-        opacity={0.9}
-        color={type === "desert" ? "#332211" : "#111111"}
-        depthWrite={false}
+        depthWrite={true}
       />
     </mesh>
   );
@@ -114,9 +109,9 @@ export function Horizons({ type, lightPollution }: HorizonsProps) {
         <TexturedHorizon type={type} lightPollution={lightPollution} />
       )}
 
-      {/* Ground plane to cover bottom holes */}
+      {/* Ground plane to cover bottom holes - Increased scale */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -5.1, 0]}>
-        <circleGeometry args={[50, 32]} />
+        <circleGeometry args={[120, 32]} />
         <meshBasicMaterial color="#000000" />
       </mesh>
     </group>

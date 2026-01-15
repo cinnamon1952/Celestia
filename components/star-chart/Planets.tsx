@@ -384,44 +384,46 @@ function CelestialBodyMarker({ body }: CelestialBodyMarkerProps) {
   };
 
   const textureUrl = TEXTURE_URLS[body.name] || config.texture;
-  const labelRef = useRef<THREE.Group | null>(null);
+  const groupRef = useRef<THREE.Group>(null);
+  const labelRef = useRef<THREE.Group>(null);
   const { camera } = useThree();
 
   // LOD Logic: Show minor moon labels ONLY when zoomed in (narrow FOV)
   useFrame(() => {
-    if (!labelRef.current) return;
+    if (!groupRef.current || !labelRef.current) return;
 
     const isMajor = MAJOR_BODIES.includes(body.name);
+    // Bodies that should always be visible (Sun, Planets, Moon)
+    // Minor moons are everything else
 
     if (camera instanceof THREE.PerspectiveCamera) {
-      // Major bodies: always visible, scale with FOV
+      // Major bodies: always visible, scale with FOV to remain visible but not overwhelming
+
+      // Update label scaling
+      const scaleFactor = Math.max(camera.fov / 60, 0.3);
+      labelRef.current.scale.set(scaleFactor, scaleFactor, scaleFactor);
+
       if (isMajor) {
-        const scaleFactor = Math.max(camera.fov / 60, 0.3);
-        labelRef.current.scale.set(scaleFactor, scaleFactor, scaleFactor);
+        groupRef.current.visible = true;
         labelRef.current.visible = true;
         return;
       }
 
-      // Minor moons: only visible when zoomed in (FOV < 20°)
-      // Fade in between 25° and 15°
-      if (camera.fov > 25) {
-        labelRef.current.visible = false;
-      } else if (camera.fov < 15) {
-        labelRef.current.visible = true;
-        // Scale based on FOV for consistency
-        const scaleFactor = Math.max(camera.fov / 60, 0.2);
-        labelRef.current.scale.set(scaleFactor, scaleFactor, scaleFactor);
+      // Minor moons: only visible when zoomed in
+      if (camera.fov > 40) {
+        groupRef.current.visible = false;
       } else {
-        // Fade in (visible but scaling up)
-        labelRef.current.visible = true;
-        const scaleFactor = Math.max(camera.fov / 60, 0.2);
-        labelRef.current.scale.set(scaleFactor, scaleFactor, scaleFactor);
+        groupRef.current.visible = true;
+        // Adjust label visibility specifically if needed, but group hides all
       }
     }
   });
 
   return (
-    <group position={[body.position.x, body.position.y, body.position.z]}>
+    <group
+      ref={groupRef}
+      position={[body.position.x, body.position.y, body.position.z]}
+    >
       {/* Render appropriate sphere type */}
       {body.name === "Earth" ? (
         <EarthSphere size={config.size} color={config.color} />

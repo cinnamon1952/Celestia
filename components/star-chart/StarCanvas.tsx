@@ -30,7 +30,8 @@ import { Constellations } from "./Constellations";
 import { Planets } from "./Planets";
 import { Asteroids } from "./Asteroids"; // Ensure Asteroids import
 import { Satellites } from "./Satellites"; // Add Satellites import
-import { HorizonPlane } from "./HorizonPlane";
+import { Horizons } from "./Horizons";
+import { GridLines } from "./GridLines";
 import { DeepSkyObjects } from "./DeepSkyObjects";
 import { StarLabels } from "./StarLabels";
 import { AtmosphericSky } from "./AtmosphericSky";
@@ -137,6 +138,7 @@ function Scene({
   showHorizon,
   showDeepSky,
   showLabels,
+  showGrid,
   initialViewDirection,
   controlsRef,
   onStarSelect,
@@ -148,6 +150,7 @@ function Scene({
   time,
   latitude,
   longitude,
+  horizon,
 }: SceneProps) {
   const hasInitialized = useRef(false);
 
@@ -242,7 +245,11 @@ function Scene({
         <DeepSkyObjects objects={deepSkyObjects} showLabels={showLabels} />
       )}
       {/* Horizon plane */}
-      {showHorizon && <HorizonPlane />}
+      {showHorizon && (
+        <Horizons type={horizon as any} lightPollution={lightPollution} />
+      )}
+      {/* Grid Lines */}
+      {showGrid && <GridLines />}
       {/* Compass tracker */}
       {onCameraRotationChange && (
         <CompassTracker onRotationChange={onCameraRotationChange} />
