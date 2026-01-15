@@ -30,7 +30,7 @@ import { Constellations } from "./Constellations";
 import { Planets } from "./Planets";
 import { Asteroids } from "./Asteroids"; // Ensure Asteroids import
 import { Satellites } from "./Satellites"; // Add Satellites import
-import { Horizons } from "./Horizons";
+import { Horizons, type HorizonType } from "./Horizons";
 import { GridLines } from "./GridLines";
 import { DeepSkyObjects } from "./DeepSkyObjects";
 import { StarLabels } from "./StarLabels";
@@ -43,23 +43,39 @@ interface StarCanvasProps {
   longitude: number;
   time: Date;
   lightPollution: number;
-  horizon: string;
+  horizon: HorizonType;
 
   // UI Toggles
-  showStars: boolean; // Was missing in interface but used in component
+  showStars: boolean;
   showConstellations: boolean;
   showConstellationArt: boolean;
   showGrid: boolean;
   showPlanets: boolean;
   showAsteroids: boolean;
-  showSatellites: boolean; // New Phase 2
-  showHorizon: boolean; // Was missing (though we use 'horizon' string, maybe this boolean is legacy? usage says 'showHorizon && <HorizonPlane />'. But we have 'horizon' string now. I should unify. For now I'll keep showHorizon to avoid breaking logic if page passes it.)
-  showDeepSky: boolean; // Was missing
-  showLabels: boolean; // Was missing
+  showSatellites: boolean;
+  showHorizon: boolean;
+  showDeepSky: boolean;
+  showLabels: boolean;
 
   // Interaction/Camera
   initialViewDirection?: { azimuth: number; altitude: number };
   onStarSelect?: (star: ProcessedStar | null) => void;
+  onBodySelect?: (body: CelestialBody) => void;
+  onConstellationSelect?: (constellation: {
+    name: string;
+    abbr: string;
+  }) => void;
+  onAsteroidSelect?: (asteroid: {
+    name: string;
+    magnitude?: number;
+    diameter?: string;
+    hazardous?: boolean;
+  }) => void;
+  onSatelliteSelect?: (satellite: {
+    name: string;
+    altitude?: number;
+    azimuth?: number;
+  }) => void;
   selectedStar?: ProcessedStar | null;
   onCameraRotationChange?: (rotation: number) => void;
   lookAtTarget?: {
@@ -133,8 +149,8 @@ function Scene({
   showStars,
   showConstellations,
   showPlanets,
-  showAsteroids, // Ensure Asteroids destructured
-  showSatellites, // Add Satellites destructured
+  showAsteroids,
+  showSatellites,
   showHorizon,
   showDeepSky,
   showLabels,
@@ -142,6 +158,10 @@ function Scene({
   initialViewDirection,
   controlsRef,
   onStarSelect,
+  onBodySelect,
+  onConstellationSelect,
+  onAsteroidSelect,
+  onSatelliteSelect,
   selectedStar,
   onCameraRotationChange,
   lookAtTarget,
@@ -225,12 +245,19 @@ function Scene({
           constellations={constellations}
           showLabels={showLabels}
           showArt={showConstellationArt}
+          onConstellationSelect={onConstellationSelect}
         />
       )}
       {/* Planets, Sun, and Moon */}
-      {showPlanets && <Planets bodies={planets} />}
+      {showPlanets && <Planets bodies={planets} onBodySelect={onBodySelect} />}
       {/* Asteroids */}
-      {showAsteroids && <Asteroids time={time} showLabels={showLabels} />}
+      {showAsteroids && (
+        <Asteroids
+          time={time}
+          showLabels={showLabels}
+          onAsteroidSelect={onAsteroidSelect}
+        />
+      )}
       {/* Satellites */}
       {showSatellites && (
         <Satellites
@@ -238,6 +265,7 @@ function Scene({
           latitude={latitude}
           longitude={longitude}
           showLabels={showLabels}
+          onSatelliteSelect={onSatelliteSelect}
         />
       )}
       {/* Deep sky objects */}
@@ -246,7 +274,7 @@ function Scene({
       )}
       {/* Horizon plane */}
       {showHorizon && (
-        <Horizons type={horizon as any} lightPollution={lightPollution} />
+        <Horizons type={horizon} lightPollution={lightPollution} />
       )}
       {/* Grid Lines */}
       {showGrid && <GridLines />}

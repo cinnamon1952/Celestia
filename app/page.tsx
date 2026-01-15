@@ -17,10 +17,13 @@ import {
   StarCanvas,
   Controls,
   CompassRoseUI,
-  StarInfoCard,
   TonightsSky,
   SearchBar,
 } from "@/components/star-chart";
+import {
+  CelestialInfoCard,
+  type SelectedObject,
+} from "@/components/star-chart/InfoCard";
 import { TourGuide } from "@/components/star-chart/TourGuide";
 import { EventCalendar } from "@/components/star-chart/EventCalendar";
 import { Onboarding } from "@/components/star-chart/Onboarding";
@@ -53,6 +56,7 @@ import {
   fetchAllDeepSky,
   type ExtendedDeepSkyObject,
 } from "@/lib/data/deepSkyService";
+import { type HorizonType } from "@/components/star-chart/Horizons";
 
 const DEFAULT_LOCATION: GeoLocation = {
   latitude: 37.7749,
@@ -104,12 +108,14 @@ function HomeContent() {
   const [showLabels, setShowLabels] = useState(true);
   const [showGrid, setShowGrid] = useState(false);
   const [showConstellationArt, setShowConstellationArt] = useState(true);
-  const [lightPollution, setLightPollution] = useState(0.2); // 0.0 to 1.0 (Dark Sky to City)
-  const [horizon, setHorizon] = useState("ocean");
+  const [lightPollution, setLightPollution] = useState(0.2);
+  const [horizon, setHorizon] = useState<HorizonType>("ocean");
   const [isTourActive, setIsTourActive] = useState(false); // Tour Guide state
 
   // Selection and camera
-  const [selectedStar, setSelectedStar] = useState<ProcessedStar | null>(null);
+  const [selectedObject, setSelectedObject] = useState<SelectedObject | null>(
+    null
+  );
   const [cameraRotation, setCameraRotation] = useState(0);
   const [lookAtTarget, setLookAtTarget] = useState<{
     x: number;
@@ -139,7 +145,7 @@ function HomeContent() {
     {
       setLocation,
       setDateTime,
-      setHorizon,
+      setHorizon: (h: string) => setHorizon(h as HorizonType),
       setLightPollution,
     }
   );
@@ -405,8 +411,53 @@ function HomeContent() {
           showDeepSky={showDeepSky}
           showLabels={showLabels}
           initialViewDirection={initialViewDirection}
-          onStarSelect={setSelectedStar}
-          selectedStar={selectedStar}
+          onStarSelect={(star) =>
+            star && setSelectedObject({ type: "star", data: star })
+          }
+          onBodySelect={(body) => {
+            // Determine if this is a planet or moon based on known moons
+            const moons = [
+              "Phobos",
+              "Deimos",
+              "Io",
+              "Europa",
+              "Ganymede",
+              "Callisto",
+              "Mimas",
+              "Enceladus",
+              "Tethys",
+              "Dione",
+              "Rhea",
+              "Titan",
+              "Iapetus",
+              "Miranda",
+              "Ariel",
+              "Umbriel",
+              "Titania",
+              "Oberon",
+              "Triton",
+              "Nereid",
+              "Charon",
+              "Nix",
+              "Hydra",
+              "Kerberos",
+              "Styx",
+            ];
+            const type = moons.includes(body.name) ? "moon" : "planet";
+            setSelectedObject({ type, data: body });
+          }}
+          onConstellationSelect={(constellation) =>
+            setSelectedObject({ type: "constellation", data: constellation })
+          }
+          onAsteroidSelect={(asteroid) =>
+            setSelectedObject({ type: "asteroid", data: asteroid })
+          }
+          onSatelliteSelect={(satellite) =>
+            setSelectedObject({ type: "satellite", data: satellite })
+          }
+          selectedStar={
+            selectedObject?.type === "star" ? selectedObject.data : null
+          }
           onCameraRotationChange={setCameraRotation}
           lookAtTarget={lookAtTarget}
           showConstellationArt={showConstellationArt}
@@ -484,23 +535,26 @@ function HomeContent() {
         location={location}
         onTimeTravel={handleDateTimeChange}
       />
-      {/* Share Button */}
-      <ShareButton onShare={shareView} /> {/* Star Info Card */}
-      {selectedStar && (
-        <StarInfoCard
-          star={selectedStar}
-          onClose={() => setSelectedStar(null)}
+      {/* Share Button - hidden when info card is open since it's integrated */}
+      {!selectedObject && <ShareButton onShare={shareView} />}
+
+      {/* Celestial Info Card - works with all object types */}
+      {selectedObject && (
+        <CelestialInfoCard
+          object={selectedObject}
+          onClose={() => setSelectedObject(null)}
+          onShare={shareView}
         />
       )}
-      {/* Hints */}
-      <div className="fixed bottom-4 left-4 z-40 flex items-center gap-3">
+      {/* Hints - Hidden on mobile */}
+      <div className="hidden sm:flex fixed bottom-4 left-4 z-40 items-center gap-3">
         <button
           onClick={() => setIsTourActive(true)}
-          className="px-3 py-1.5 text-sm bg-cyan-500/30 hover:bg-cyan-500/50 rounded-lg text-cyan-100 border border-cyan-400/30 transition-all shadow-lg"
+          className="px-2 py-1 sm:px-3 sm:py-1.5 text-xs sm:text-sm bg-cyan-500/30 hover:bg-cyan-500/50 rounded-lg text-cyan-100 border border-cyan-400/30 transition-all shadow-lg"
         >
           What&apos;s Up Tonight?
         </button>
-        <p className="text-[10px] text-neutral-700">
+        <p className="hidden sm:block text-[10px] text-neutral-700">
           Scroll to zoom • Drag to rotate • Click stars for info
         </p>
       </div>

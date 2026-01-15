@@ -15,26 +15,103 @@ import type { CelestialBody } from "@/lib/astronomy";
 
 interface PlanetsProps {
   bodies: CelestialBody[];
+  onBodySelect?: (body: CelestialBody) => void;
 }
 
 // Texture URLs (using high-quality public domain assets where possible)
 const TEXTURE_URLS: Record<string, string> = {
-  // Reliable textures from Three.js examples and Wikimedia
-  Sun: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/The_Sun_by_the_Atmospheric_Imaging_Assembly_of_NASA%27s_Solar_Dynamics_Observatory_-_20100819.jpg/1024px-The_Sun_by_the_Atmospheric_Imaging_Assembly_of_NASA%27s_Solar_Dynamics_Observatory_-_20100819.jpg", // Solar dynamics
+  // Planets - Using reliable external sources
+  Sun: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/The_Sun_by_the_Atmospheric_Imaging_Assembly_of_NASA%27s_Solar_Dynamics_Observatory_-_20100819.jpg/1024px-The_Sun_by_the_Atmospheric_Imaging_Assembly_of_NASA%27s_Solar_Dynamics_Observatory_-_20100819.jpg",
   Moon: "https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/moon_1024.jpg",
   Earth:
     "https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_atmos_2048.jpg",
-  Mars: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/02/OSIRIS_Mars_true_color.jpg/1024px-OSIRIS_Mars_true_color.jpg",
-  Jupiter:
-    "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Jupiter.jpg/1024px-Jupiter.jpg",
-  Venus:
-    "https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/Venus_globe.jpg/1024px-Venus_globe.jpg", // Radar/Atmosphere? This is atmosphere.
+  Mars: "https://upload.wikimedia.org/wikipedia/commons/0/02/OSIRIS_Mars_true_color.jpg",
+  Jupiter: "https://upload.wikimedia.org/wikipedia/commons/e/e2/Jupiter.jpg",
+  Venus: "https://upload.wikimedia.org/wikipedia/commons/8/85/Venus_globe.jpg",
   Saturn:
-    "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/Saturn_%28planet%29_large.jpg/1024px-Saturn_%28planet%29_large.jpg",
-  Uranus:
-    "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/Uranus2.jpg/1024px-Uranus2.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/c/c7/Saturn_during_Equinox.jpg",
+  Uranus: "https://upload.wikimedia.org/wikipedia/commons/3/3d/Uranus2.jpg",
   Neptune:
-    "https://upload.wikimedia.org/wikipedia/commons/thumb/5/56/Neptune_Full.jpg/1024px-Neptune_Full.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/5/56/Neptune_Full.jpg",
+  Pluto: "/textures/pluto.jpg",
+
+  // Mars Moons
+  Phobos: "/textures/phobos.jpg",
+  Deimos: "/textures/deimos.jpg",
+
+  // Jupiter Moons
+  Io: "/textures/io.jpg",
+  Europa: "/textures/europa.jpg",
+  Ganymede: "/textures/ganymede.jpg",
+  Callisto: "/textures/callisto.jpg",
+
+  // Saturn Moons
+  Mimas: "/textures/mimas.jpg",
+  Enceladus: "/textures/enceladus.jpg",
+  Tethys: "/textures/tethys.jpg",
+  Dione: "/textures/dione.jpg",
+  Rhea: "/textures/rhea.jpg",
+  Titan: "/textures/titan.jpg",
+  Iapetus: "/textures/lapetus.jpg", // Note: file is named lapetus.jpg
+
+  // Uranus Moons
+  Miranda: "/textures/miranda.jpg",
+  Ariel: "/textures/ariel.jpeg", // Note: .jpeg extension
+  Umbriel: "/textures/umbriel.jpg",
+  Titania: "/textures/titania.jpg",
+  Oberon: "/textures/oberon.jpg",
+
+  // Neptune Moons
+  Triton: "/textures/triton.jpg",
+  Nereid: "/textures/nereid.jpg",
+
+  // Pluto Moons
+  Charon: "/textures/charon.jpg",
+  // Nix, Hydra, Kerberos, Styx - no textures yet (very small moons)
+};
+
+// Moon orbital configuration - defines parent planet and orbital position
+// Each moon orbits at a specific radius and angle around its parent
+const MOON_ORBITS: Record<
+  string,
+  { parent: string; radius: number; angle: number }
+> = {
+  // Mars moons
+  Phobos: { parent: "Mars", radius: 4, angle: 0 },
+  Deimos: { parent: "Mars", radius: 6, angle: 180 },
+
+  // Jupiter moons (Galilean) - spread evenly around Jupiter
+  Io: { parent: "Jupiter", radius: 5, angle: 0 },
+  Europa: { parent: "Jupiter", radius: 7, angle: 90 },
+  Ganymede: { parent: "Jupiter", radius: 9, angle: 180 },
+  Callisto: { parent: "Jupiter", radius: 11, angle: 270 },
+
+  // Saturn moons - spread around Saturn
+  Mimas: { parent: "Saturn", radius: 4, angle: 0 },
+  Enceladus: { parent: "Saturn", radius: 5, angle: 45 },
+  Tethys: { parent: "Saturn", radius: 6, angle: 90 },
+  Dione: { parent: "Saturn", radius: 7, angle: 135 },
+  Rhea: { parent: "Saturn", radius: 8, angle: 180 },
+  Titan: { parent: "Saturn", radius: 10, angle: 225 },
+  Iapetus: { parent: "Saturn", radius: 12, angle: 315 },
+
+  // Uranus moons - spread around Uranus
+  Miranda: { parent: "Uranus", radius: 4, angle: 0 },
+  Ariel: { parent: "Uranus", radius: 5, angle: 72 },
+  Umbriel: { parent: "Uranus", radius: 6, angle: 144 },
+  Titania: { parent: "Uranus", radius: 7, angle: 216 },
+  Oberon: { parent: "Uranus", radius: 8, angle: 288 },
+
+  // Neptune moons
+  Triton: { parent: "Neptune", radius: 5, angle: 0 },
+  Nereid: { parent: "Neptune", radius: 8, angle: 180 },
+
+  // Pluto moons - spread around Pluto
+  Charon: { parent: "Pluto", radius: 4, angle: 0 },
+  Nix: { parent: "Pluto", radius: 6, angle: 72 },
+  Hydra: { parent: "Pluto", radius: 7, angle: 144 },
+  Kerberos: { parent: "Pluto", radius: 8, angle: 216 },
+  Styx: { parent: "Pluto", radius: 9, angle: 288 },
 };
 
 // Color and size configurations for celestial bodies
@@ -48,6 +125,7 @@ const BODY_CONFIG: Record<
     texture?: string;
     labelPriority?: number; // Higher = further from center
     labelOffsetX?: number; // Horizontal offset to prevent overlap
+    labelOffsetY?: number; // Vertical offset to prevent overlap
   }
 > = {
   Sun: {
@@ -113,48 +191,36 @@ const BODY_CONFIG: Record<
     labelPriority: 1,
   },
 
-  // Moons - sizes increased to be visible
+  // Moons - labels centered directly above each moon body
   Phobos: {
     color: "#ff6b4a",
     size: 0.8,
     labelColor: "#ff8866",
-    labelPriority: 1,
-    labelOffsetX: -3,
   },
   Deimos: {
     color: "#ff6b4a",
     size: 0.8,
     labelColor: "#ff8866",
-    labelPriority: 1,
-    labelOffsetX: 3,
   },
   Io: {
     color: "#d4a574",
     size: 0.8,
     labelColor: "#e8c090",
-    labelPriority: 1,
-    labelOffsetX: -4,
   },
   Europa: {
     color: "#d4a574",
     size: 0.8,
     labelColor: "#e8c090",
-    labelPriority: 1,
-    labelOffsetX: 4,
   },
   Ganymede: {
     color: "#d4a574",
     size: 1.0,
     labelColor: "#e8c090",
-    labelPriority: 1,
-    labelOffsetX: -5,
   },
   Callisto: {
     color: "#d4a574",
     size: 1.0,
     labelColor: "#e8c090",
-    labelPriority: 1,
-    labelOffsetX: 5,
   },
   Mimas: {
     color: "#f4d59e",
@@ -242,33 +308,28 @@ const BODY_CONFIG: Record<
   },
   Charon: {
     color: "#c4a484",
-    size: 0.3,
+    size: 0.5,
     labelColor: "#d4b494",
-    labelPriority: 1.5,
   },
   Nix: {
     color: "#c4a484",
-    size: 0.15,
+    size: 0.2,
     labelColor: "#d4b494",
-    labelPriority: 2.0,
   },
   Hydra: {
     color: "#c4a484",
-    size: 0.15,
+    size: 0.2,
     labelColor: "#d4b494",
-    labelPriority: 2.5,
   },
   Kerberos: {
     color: "#c4a484",
-    size: 0.1,
+    size: 0.15,
     labelColor: "#d4b494",
-    labelPriority: 3.0,
   },
   Styx: {
     color: "#c4a484",
-    size: 0.1,
+    size: 0.15,
     labelColor: "#d4b494",
-    labelPriority: 3.5,
   },
 };
 
@@ -360,6 +421,8 @@ function SolidSphere({
 
 interface CelestialBodyMarkerProps {
   body: CelestialBody;
+  allBodies: CelestialBody[];
+  onBodySelect?: (body: CelestialBody) => void;
 }
 
 const MAJOR_BODIES = [
@@ -376,7 +439,11 @@ const MAJOR_BODIES = [
   "Moon",
 ];
 
-function CelestialBodyMarker({ body }: CelestialBodyMarkerProps) {
+function CelestialBodyMarker({
+  body,
+  allBodies,
+  onBodySelect,
+}: CelestialBodyMarkerProps) {
   const config = BODY_CONFIG[body.name] || {
     color: "#ffffff",
     size: 1,
@@ -387,6 +454,31 @@ function CelestialBodyMarker({ body }: CelestialBodyMarkerProps) {
   const groupRef = useRef<THREE.Group>(null);
   const labelRef = useRef<THREE.Group>(null);
   const { camera } = useThree();
+
+  // Calculate position - for moons, position them in orbit around their parent
+  let renderPosition = {
+    x: body.position.x,
+    y: body.position.y,
+    z: body.position.z,
+  };
+
+  const moonOrbit = MOON_ORBITS[body.name];
+  if (moonOrbit) {
+    // Find parent planet position
+    const parent = allBodies.find((b) => b.name === moonOrbit.parent);
+    if (parent) {
+      // Calculate orbital offset using angle and radius
+      const angleRad = (moonOrbit.angle * Math.PI) / 180;
+      const offsetX = Math.cos(angleRad) * moonOrbit.radius;
+      const offsetZ = Math.sin(angleRad) * moonOrbit.radius;
+
+      renderPosition = {
+        x: parent.position.x + offsetX,
+        y: parent.position.y,
+        z: parent.position.z + offsetZ,
+      };
+    }
+  }
 
   // LOD Logic: Show minor moon labels ONLY when zoomed in (narrow FOV)
   useFrame(() => {
@@ -422,7 +514,17 @@ function CelestialBodyMarker({ body }: CelestialBodyMarkerProps) {
   return (
     <group
       ref={groupRef}
-      position={[body.position.x, body.position.y, body.position.z]}
+      position={[renderPosition.x, renderPosition.y, renderPosition.z]}
+      onClick={(e) => {
+        e.stopPropagation();
+        onBodySelect?.(body);
+      }}
+      onPointerOver={() => {
+        document.body.style.cursor = "pointer";
+      }}
+      onPointerOut={() => {
+        document.body.style.cursor = "default";
+      }}
     >
       {/* Render appropriate sphere type */}
       {body.name === "Earth" ? (
@@ -468,12 +570,9 @@ function CelestialBodyMarker({ body }: CelestialBodyMarkerProps) {
         </mesh>
       )}
 
-      {/* Labels for all celestial bodies */}
+      {/* Labels for all celestial bodies - centered directly above */}
       <Billboard follow={true}>
-        <group
-          ref={labelRef}
-          position={[config.labelOffsetX || 0, config.size + 2.5, 0]}
-        >
+        <group ref={labelRef} position={[0, config.size + 1.5, 0]}>
           <Text
             fontSize={MAJOR_BODIES.includes(body.name) ? 1.8 : 1.0}
             color={config.labelColor}
@@ -520,11 +619,16 @@ function getMoonPhaseName(phase: number): string {
   return "Waning Crescent";
 }
 
-export function Planets({ bodies }: PlanetsProps) {
+export function Planets({ bodies, onBodySelect }: PlanetsProps) {
   return (
     <group name="planets">
       {bodies.map((body) => (
-        <CelestialBodyMarker key={body.name} body={body} />
+        <CelestialBodyMarker
+          key={body.name}
+          body={body}
+          allBodies={bodies}
+          onBodySelect={onBodySelect}
+        />
       ))}
     </group>
   );

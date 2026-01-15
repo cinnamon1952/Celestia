@@ -16,6 +16,10 @@ interface ConstellationsProps {
   constellations: ConstellationDisplay[];
   showLabels?: boolean;
   showArt?: boolean;
+  onConstellationSelect?: (constellation: {
+    name: string;
+    abbr: string;
+  }) => void;
 }
 
 // Component that loads and renders constellation art texture
@@ -90,6 +94,7 @@ export function Constellations({
   constellations,
   showLabels = true,
   showArt = false,
+  onConstellationSelect,
 }: ConstellationsProps) {
   // Filter to only visible constellations
   const visibleConstellations = useMemo(() => {
@@ -175,6 +180,19 @@ export function Constellations({
                 outlineWidth={0.15}
                 outlineColor="#000000"
                 fillOpacity={0.8}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onConstellationSelect?.({
+                    name: constellation.name,
+                    abbr: constellation.abbr,
+                  });
+                }}
+                onPointerOver={() => {
+                  document.body.style.cursor = "pointer";
+                }}
+                onPointerOut={() => {
+                  document.body.style.cursor = "default";
+                }}
               >
                 {constellation.name}
               </Text>

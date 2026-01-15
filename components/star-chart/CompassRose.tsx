@@ -16,7 +16,7 @@ export function CompassRoseUI({ rotation }: CompassRoseUIProps) {
 
   return (
     <div className="fixed bottom-6 right-4 z-40">
-      <div className="relative w-14 h-14">
+      <div className="relative w-10 h-10 sm:w-14 sm:h-14">
         {/* Ring */}
         <div className="absolute inset-0 rounded-full border border-white/10 bg-black/60 backdrop-blur-xl shadow-lg shadow-black/30" />
 

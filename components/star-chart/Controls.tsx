@@ -4,7 +4,7 @@
  * Controls - Clean, minimal UI for star chart configuration
  */
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import {
   ChevronDown,
   ChevronUp,
@@ -17,6 +17,8 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 import type { GeoLocation } from "@/lib/astronomy";
+import { getUpcomingAstronomyEvents } from "@/lib/astronomy/calculations";
+import { type HorizonType } from "./Horizons";
 
 interface ControlsProps {
   location: GeoLocation;
@@ -44,8 +46,8 @@ interface ControlsProps {
   onShowConstellationArtChange: (show: boolean) => void;
   lightPollution: number;
   onLightPollutionChange: (value: number) => void;
-  horizon: string;
-  onHorizonChange: (value: string) => void;
+  horizon: HorizonType;
+  onHorizonChange: (value: HorizonType) => void;
   // New Phase 2
   showAsteroids: boolean;
   onShowAsteroidsChange: (show: boolean) => void;
@@ -462,7 +464,7 @@ export function Controls({
                     ].map((opt) => (
                       <button
                         key={opt.id}
-                        onClick={() => onHorizonChange(opt.id)}
+                        onClick={() => onHorizonChange(opt.id as HorizonType)}
                         className={`
                       px-3 py-2 text-xs rounded-lg transition-all duration-200 border
                       ${
@@ -478,6 +480,51 @@ export function Controls({
                   </div>
                 </div>
               </div>
+            </Section>
+
+            {/* Events Section - Shows upcoming astronomical events */}
+            <Section title="Upcoming Events" defaultOpen={false}>
+              <div className="space-y-2 max-h-48 overflow-y-auto">
+                {useMemo(() => {
+                  const events = getUpcomingAstronomyEvents(
+                    location,
+                    dateTime,
+                    30
+                  );
+                  return events.slice(0, 5).map((event) => (
+                    <div
+                      key={event.id}
+                      onClick={() => onDateTimeChange(event.date)}
+                      className="p-2 bg-white/5 hover:bg-white/10 rounded-lg cursor-pointer transition-colors"
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className="text-lg">
+                          {event.type === "moon"
+                            ? "🌙"
+                            : event.type === "meteor"
+                            ? "🌠"
+                            : "📅"}
+                        </span>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs font-medium text-white truncate">
+                            {event.name}
+                          </p>
+                          <p className="text-[10px] text-white/50">
+                            {event.date.toLocaleDateString("en-US", {
+                              month: "short",
+                              day: "numeric",
+                            })}
+                          </p>
+                        </div>
+                        <span className="text-[10px] text-cyan-400">→</span>
+                      </div>
+                    </div>
+                  ));
+                }, [location, dateTime, onDateTimeChange])}
+              </div>
+              <p className="text-[9px] text-white/30 mt-2 text-center">
+                Tap event to time travel
+              </p>
             </Section>
           </div>
 
@@ -499,6 +546,27 @@ export function Controls({
                 second: "2-digit",
               })}
             </p>
+
+            {/* Mobile: Simple Copy Link - no broken share dialogs */}
+            <button
+              onClick={async (e) => {
+                try {
+                  await navigator.clipboard.writeText(window.location.href);
+                  const btn = e.currentTarget;
+                  const original = btn.innerHTML;
+                  btn.innerHTML = "✓ Copied!";
+                  setTimeout(() => {
+                    btn.innerHTML = original;
+                  }, 1500);
+                } catch {
+                  // Silently fail
+                }
+              }}
+              className="sm:hidden w-full py-2 mb-2 text-xs bg-blue-500/20 hover:bg-blue-500/30 text-blue-200 rounded-lg border border-blue-500/30 transition-colors flex items-center justify-center gap-1"
+            >
+              🔗 Copy Link
+            </button>
+
             <button
               onClick={() => {
                 localStorage.removeItem("celestia-onboarding-complete");

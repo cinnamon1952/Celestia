@@ -13,6 +13,11 @@ interface SatellitesProps {
   latitude: number;
   longitude: number;
   showLabels?: boolean;
+  onSatelliteSelect?: (satellite: {
+    name: string;
+    altitude?: number;
+    azimuth?: number;
+  }) => void;
 }
 
 export function Satellites({
@@ -20,6 +25,7 @@ export function Satellites({
   latitude,
   longitude,
   showLabels = true,
+  onSatelliteSelect,
 }: SatellitesProps) {
   const [hovered, setHovered] = useState<string | null>(null);
 
@@ -79,8 +85,18 @@ export function Satellites({
         <group key={sat.name}>
           {/* Satellite Mesh */}
           <mesh
-            onPointerOver={() => setHovered(sat.name)}
-            onPointerOut={() => setHovered(null)}
+            onClick={(e) => {
+              e.stopPropagation();
+              onSatelliteSelect?.({ name: sat.name, altitude: 0, azimuth: 0 }); // Todo: calculate alt/az
+            }}
+            onPointerOver={() => {
+              setHovered(sat.name);
+              document.body.style.cursor = "pointer";
+            }}
+            onPointerOut={() => {
+              setHovered(null);
+              document.body.style.cursor = "default";
+            }}
           >
             <boxGeometry args={[1, 1, 1]} /> {/* Small box icon */}
             <meshBasicMaterial color={sat.color} />

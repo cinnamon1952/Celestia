@@ -20,7 +20,7 @@ export function ShareButton({ onShare }: ShareButtonProps) {
   return (
     <button
       onClick={handleShare}
-      className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 px-3 py-2 bg-black/50 backdrop-blur-md border border-white/20 rounded-lg text-white/80 hover:bg-white/10 transition-all text-sm flex items-center gap-2"
+      className="hidden sm:flex fixed bottom-4 left-1/2 -translate-x-1/2 z-50 px-3 py-2 bg-black/50 backdrop-blur-md border border-white/20 rounded-lg text-white/80 hover:bg-white/10 transition-all text-sm items-center gap-2"
     >
       {copied ? (
         <>

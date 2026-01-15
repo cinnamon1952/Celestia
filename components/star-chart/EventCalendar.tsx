@@ -54,10 +54,10 @@ export function EventCalendar({
 
   return (
     <>
-      {/* Toggle Button */}
+      {/* Toggle Button - Hidden on mobile, shown on tablets/desktop */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed top-4 right-16 z-50 px-3 py-2 bg-black/50 backdrop-blur-md border border-white/20 rounded-lg text-white/80 hover:bg-white/10 transition-all text-sm flex items-center gap-2"
+        className="hidden sm:flex fixed top-4 right-16 z-50 px-3 py-2 bg-black/50 backdrop-blur-md border border-white/20 rounded-lg text-white/80 hover:bg-white/10 transition-all text-sm items-center gap-2"
       >
         <span>📅</span>
         <span className="hidden sm:inline">Events</span>

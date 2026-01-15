@@ -9,6 +9,12 @@ import {
 interface AsteroidsProps {
   time: Date;
   showLabels?: boolean;
+  onAsteroidSelect?: (asteroid: {
+    name: string;
+    magnitude?: number;
+    diameter?: string;
+    hazardous?: boolean;
+  }) => void;
 }
 
 const AU_SCALE = 20; // Needs to match the rest of the app.
@@ -16,7 +22,11 @@ const AU_SCALE = 20; // Needs to match the rest of the app.
 // If Earth is at 10, then 10. `calculateAsteroidPositions` returns AU.
 // I will verify scale in next step if needed, or make it a prop.
 
-export function Asteroids({ time, showLabels = true }: AsteroidsProps) {
+export function Asteroids({
+  time,
+  showLabels = true,
+  onAsteroidSelect,
+}: AsteroidsProps) {
   const asteroids = useMemo(() => calculateAsteroidPositions(time), [time]);
   const [hovered, setHovered] = useState<string | null>(null);
 
@@ -33,8 +43,22 @@ export function Asteroids({ time, showLabels = true }: AsteroidsProps) {
         >
           {/* Asteroid Mesh */}
           <mesh
-            onPointerOver={() => setHovered(asteroid.name)}
-            onPointerOut={() => setHovered(null)}
+            onClick={(e) => {
+              e.stopPropagation();
+              onAsteroidSelect?.({
+                name: asteroid.name,
+                diameter: "Unknown",
+                hazardous: false,
+              });
+            }}
+            onPointerOver={() => {
+              setHovered(asteroid.name);
+              document.body.style.cursor = "pointer";
+            }}
+            onPointerOut={() => {
+              setHovered(null);
+              document.body.style.cursor = "default";
+            }}
           >
             <dodecahedronGeometry args={[0.08, 0]} /> {/* Low poly rock look */}
             <meshStandardMaterial
